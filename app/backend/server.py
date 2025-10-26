@@ -22,8 +22,17 @@ db = client[os.environ['DB_NAME']]
 # Create the main app without a prefix
 app = FastAPI()
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Create a router with the /api prefix
-api_router = APIRouter(prefix=\"/api\")
+api_router = APIRouter(prefix="/api")
 
 
 # Define Models
@@ -36,18 +45,18 @@ class StatusCheckCreate(BaseModel):
     client_name: str
 
 # Add your routes to the router instead of directly to app
-@api_router.get(\"/\")
+@api_router.get("/")
 async def root():
-    return {\"message\": \"Hello World\"}
+    return {"message": "Hello World"}
 
-@api_router.post(\"/status\", response_model=StatusCheck)
+@api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.dict()
     status_obj = StatusCheck(**status_dict)
     _ = await db.status_checks.insert_one(status_obj.dict())
     return status_obj
 
-@api_router.get(\"/status\", response_model=List[StatusCheck])
+@api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
