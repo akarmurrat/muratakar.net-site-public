@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "package.json", "use": "@vercel/static-build", "config": { "distDir": "build" } }
+  ],
+  "rewrites": [
+    { "source": "/api/:match*", "destination": "https://YOUR-BACKEND-URL/api/:match*" },
+    { "source": "/(.*)", "destination": "/" }
+  ],
+  "env": {
+    "REACT_APP_BACKEND_URL": ""
+  }
+}

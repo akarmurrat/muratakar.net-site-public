@@ -1,7 +1,9 @@
-"import axios from 'axios';
+import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+  ? process.env.REACT_APP_BACKEND_URL.replace(/\/+$/, '')
+  : (process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '');
+const API = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
 
 // Projects API
 export const projectsAPI = {
@@ -133,4 +135,3 @@ export const contactAPI = {
     return response.data;
   }
 };
-"

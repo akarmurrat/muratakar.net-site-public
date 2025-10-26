@@ -2,7 +2,15 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Github, Linkedin, Twitter, Instagram, Mail } from 'lucide-react';
 import { personalInfo } from '../mock/mockData';
-import { Button } from './ui/button';
+// Fallback simple button to avoid missing UI lib
+const Button = ({ children, className = '', ...props }) => (
+  <button
+    className={`inline-flex items-center justify-center h-10 px-4 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors ${className}`}
+    {...props}
+  >
+    {children}
+  </button>
+);
 
 const Layout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
