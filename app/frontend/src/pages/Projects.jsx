@@ -1,17 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExternalLink, Filter } from 'lucide-react';
-import { projects } from '../mock/mockData';
+import { projectsAPI } from '../services/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 
 const Projects = () => {
+  const [projects, setProjects] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [categories, setCategories] = useState(['All']);
+  const [loading, setLoading] = useState(true);
 
-  const categories = ['All', ...new Set(projects.map(p => p.category))];
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await projectsAPI.getAll();
+        setProjects(data);
+        
+        // Extract unique categories
+        const uniqueCategories = ['All', ...new Set(data.map(p => p.category))];
+        setCategories(uniqueCategories);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProjects();
+  }, []);
 
   const filteredProjects = selectedCategory === 'All'
     ? projects
     : projects.filter(p => p.category === selectedCategory);
+  
+  if (loading) {
+    return <div className=\"min-h-screen flex items-center justify-center\">
+      <p className=\"text-2xl text-slate-600\">Yükleniyor...</p>
+    </div>;
+  }
 
   return (
     <div className="min-h-screen py-20 bg-slate-50">
@@ -95,3 +121,4 @@ const Projects = () => {
 };
 
 export default Projects;
+
