@@ -142,6 +142,25 @@ const CalendarPage = () => {
     }
   };
 
+  const getTypeLabel = (type) => {
+    switch (type) {
+      case 'meeting':
+        return 'Toplantı';
+      case 'work':
+        return 'İş';
+      case 'task':
+        return 'Görev';
+      default:
+        return 'Diğer';
+    }
+  };
+
+  if (loading) {
+    return <div className=\"min-h-screen flex items-center justify-center\">
+      <p className=\"text-2xl text-slate-600\">Yükleniyor...</p>
+    </div>;
+  }
+
   return (
     <div className="min-h-screen py-20 bg-slate-50">
       <div className="max-w-6xl mx-auto px-6">
@@ -300,4 +319,5 @@ const CalendarPage = () => {
 };
 
 export default CalendarPage;
+
 
