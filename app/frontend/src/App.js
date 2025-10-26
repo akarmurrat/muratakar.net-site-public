@@ -9,7 +9,7 @@ import CalendarPage from './pages/CalendarPage';
 import CV from './pages/CV';
 import Contact from './pages/Contact';
 import { Toaster } from './components/ui/sonner';
-import './App.css';
+//import './App.css';
 
 function App() {
   return (
@@ -31,3 +31,4 @@ function App() {
 }
 
 export default App;
+
