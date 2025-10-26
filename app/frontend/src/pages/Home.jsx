@@ -1,11 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Code, Briefcase, BookOpen } from 'lucide-react';
-import { personalInfo, projects, blogPosts } from '../mock/mockData';
+import { personalInfo } from '../mock/mockData';
+import { projectsAPI, blogAPI } from '../services/api';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 
 const Home = () => {
+  const [projects, setProjects] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [projectsData, blogData] = await Promise.all([
+          projectsAPI.getAll(),
+          blogAPI.getAll()
+        ]);
+        setProjects(projectsData);
+        setBlogPosts(blogData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div className=\"min-h-screen flex items-center justify-center\">
+      <p className=\"text-2xl text-slate-600\">Yükleniyor...</p>
+    </div>;
+  }
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -185,3 +214,4 @@ const Home = () => {
 };
 
 export default Home;
+
