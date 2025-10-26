@@ -1,0 +1,181 @@
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Github, Linkedin, Twitter, Instagram, Mail } from 'lucide-react';
+import { personalInfo } from '../mock/mockData';
+import { Button } from './ui/button';
+
+const Layout = ({ children }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const navLinks = [
+    { path: '/', label: 'Ana Sayfa' },
+    { path: '/about', label: 'Hakkımda' },
+    { path: '/projects', label: 'Projeler' },
+    { path: '/blog', label: 'Blog' },
+    { path: '/calendar', label: 'Takvim' },
+    { path: '/cv', label: 'CV' },
+    { path: '/contact', label: 'İletişim' }
+  ];
+
+  const isActive = (path) => location.pathname === path;
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200 shadow-sm">
+        <nav className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">MA</span>
+              </div>
+              <span className="text-xl font-bold text-slate-900">muratakar.net</span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`px-4 py-2 rounded-full transition-all duration-300 ${
+                    isActive(link.path)
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? (
+                <X className="w-6 h-6 text-slate-900" />
+              ) : (
+                <Menu className="w-6 h-6 text-slate-900" />
+              )}
+            </button>
+          </div>
+
+          {/* Mobile Navigation */}
+          {isMenuOpen && (
+            <div className="md:hidden mt-4 pb-4 space-y-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`block px-4 py-3 rounded-xl transition-all duration-300 ${
+                    isActive(link.path)
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </nav>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-grow">{children}</main>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* About */}
+            <div>
+              <h3 className="text-xl font-bold mb-4">Murat Akar</h3>
+              <p className="text-slate-400 leading-relaxed">
+                Modern teknolojiler ve yaratıcı çözümler üzerine çalışan bir profesyonelim.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-xl font-bold mb-4">Hızlı Bağlantılar</h3>
+              <ul className="space-y-2">
+                {navLinks.slice(0, 4).map((link) => (
+                  <li key={link.path}>
+                    <Link
+                      to={link.path}
+                      className="text-slate-400 hover:text-blue-400 transition-colors duration-300"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Social Media */}
+            <div>
+              <h3 className="text-xl font-bold mb-4">Sosyal Medya</h3>
+              <div className="flex space-x-4">
+                <a
+                  href={personalInfo.social.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors duration-300"
+                >
+                  <Github className="w-5 h-5" />
+                </a>
+                <a
+                  href={personalInfo.social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors duration-300"
+                >
+                  <Linkedin className="w-5 h-5" />
+                </a>
+                <a
+                  href={personalInfo.social.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors duration-300"
+                >
+                  <Twitter className="w-5 h-5" />
+                </a>
+                <a
+                  href={personalInfo.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors duration-300"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+              </div>
+              <div className="mt-4">
+                <a
+                  href={`mailto:${personalInfo.email}`}
+                  className="flex items-center text-slate-400 hover:text-blue-400 transition-colors duration-300"
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  {personalInfo.email}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-800 mt-8 pt-8 text-center">
+            <p className="text-slate-400">
+              © {new Date().getFullYear()} Murat Akar. Tüm hakları saklıdır.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Layout;

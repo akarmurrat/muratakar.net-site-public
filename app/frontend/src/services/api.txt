@@ -1,0 +1,136 @@
+"import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+// Projects API
+export const projectsAPI = {
+  getAll: async (category = null) => {
+    const url = category && category !== 'All' 
+      ? `${API}/projects?category=${category}` 
+      : `${API}/projects`;
+    const response = await axios.get(url);
+    return response.data;
+  },
+  
+  getById: async (id) => {
+    const response = await axios.get(`${API}/projects/${id}`);
+    return response.data;
+  },
+  
+  create: async (project) => {
+    const response = await axios.post(`${API}/projects`, project);
+    return response.data;
+  },
+  
+  update: async (id, project) => {
+    const response = await axios.put(`${API}/projects/${id}`, project);
+    return response.data;
+  },
+  
+  delete: async (id) => {
+    const response = await axios.delete(`${API}/projects/${id}`);
+    return response.data;
+  }
+};
+
+// Blog API
+export const blogAPI = {
+  getAll: async (category = null, search = null) => {
+    let url = `${API}/blog?`;
+    if (category && category !== 'All') url += `category=${category}&`;
+    if (search) url += `search=${search}`;
+    const response = await axios.get(url);
+    return response.data;
+  },
+  
+  getById: async (id) => {
+    const response = await axios.get(`${API}/blog/${id}`);
+    return response.data;
+  },
+  
+  create: async (post) => {
+    const response = await axios.post(`${API}/blog`, post);
+    return response.data;
+  },
+  
+  update: async (id, post) => {
+    const response = await axios.put(`${API}/blog/${id}`, post);
+    return response.data;
+  },
+  
+  delete: async (id) => {
+    const response = await axios.delete(`${API}/blog/${id}`);
+    return response.data;
+  }
+};
+
+// Calendar API
+export const calendarAPI = {
+  getAll: async () => {
+    const response = await axios.get(`${API}/calendar`);
+    return response.data;
+  },
+  
+  getById: async (id) => {
+    const response = await axios.get(`${API}/calendar/${id}`);
+    return response.data;
+  },
+  
+  create: async (event) => {
+    const response = await axios.post(`${API}/calendar`, event);
+    return response.data;
+  },
+  
+  update: async (id, event) => {
+    const response = await axios.put(`${API}/calendar/${id}`, event);
+    return response.data;
+  },
+  
+  delete: async (id) => {
+    const response = await axios.delete(`${API}/calendar/${id}`);
+    return response.data;
+  }
+};
+
+// Timeline API
+export const timelineAPI = {
+  getAll: async () => {
+    const response = await axios.get(`${API}/timeline`);
+    return response.data;
+  },
+  
+  getById: async (id) => {
+    const response = await axios.get(`${API}/timeline/${id}`);
+    return response.data;
+  },
+  
+  create: async (event) => {
+    const response = await axios.post(`${API}/timeline`, event);
+    return response.data;
+  },
+  
+  update: async (id, event) => {
+    const response = await axios.put(`${API}/timeline/${id}`, event);
+    return response.data;
+  },
+  
+  delete: async (id) => {
+    const response = await axios.delete(`${API}/timeline/${id}`);
+    return response.data;
+  }
+};
+
+// Contact API
+export const contactAPI = {
+  submit: async (message) => {
+    const response = await axios.post(`${API}/contact`, message);
+    return response.data;
+  },
+  
+  getAll: async () => {
+    const response = await axios.get(`${API}/contact`);
+    return response.data;
+  }
+};
+"

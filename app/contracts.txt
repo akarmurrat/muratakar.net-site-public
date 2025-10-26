@@ -1,0 +1,122 @@
+"# API Contracts & Integration Plan
+
+## Overview
+Bu doküman, Murat Akar kişisel web sitesi için frontend-backend entegrasyonunu tanımlar.
+
+## Mock Data Mapping
+
+### 1. Projects (Projeler)
+**Mock Location:** `/frontend/src/mock/mockData.js` - `projects` array
+**Backend Collection:** `projects`
+**Fields:**
+- title (string)
+- description (string)
+- image (string - URL)
+- technologies (array of strings)
+- category (string)
+- link (string)
+- date (string - YYYY-MM format)
+
+### 2. Blog Posts (Blog Yazıları)
+**Mock Location:** `/frontend/src/mock/mockData.js` - `blogPosts` array
+**Backend Collection:** `blog_posts`
+**Fields:**
+- title (string)
+- excerpt (string)
+- content (string)
+- category (string)
+- date (string - YYYY-MM-DD format)
+- readTime (string)
+- image (string - URL)
+
+### 3. Calendar Events (Takvim Etkinlikleri)
+**Mock Location:** `/frontend/src/mock/mockData.js` - `calendarEvents` array
+**Backend Collection:** `calendar_events`
+**Fields:**
+- title (string)
+- description (string)
+- date (string - YYYY-MM-DD format)
+- time (string - HH:MM format)
+- type (string - 'meeting', 'work', 'task')
+
+### 4. Timeline Events (Zaman Çizelgesi)
+**Mock Location:** `/frontend/src/mock/mockData.js` - `timelineEvents` array
+**Backend Collection:** `timeline_events`
+**Fields:**
+- year (string)
+- title (string)
+- description (string)
+- type (string - 'achievement', 'project', 'learning', 'career')
+
+### 5. Contact Messages (İletişim Mesajları)
+**Mock Location:** Form submission in `/frontend/src/pages/Contact.jsx`
+**Backend Collection:** `contact_messages`
+**Fields:**
+- name (string)
+- email (string)
+- subject (string)
+- message (string)
+- date (datetime - auto-generated)
+
+## API Endpoints
+
+### Projects API
+- `GET /api/projects` - Get all projects (with optional category filter)
+- `GET /api/projects/{id}` - Get single project
+- `POST /api/projects` - Create new project
+- `PUT /api/projects/{id}` - Update project
+- `DELETE /api/projects/{id}` - Delete project
+
+### Blog Posts API
+- `GET /api/blog` - Get all blog posts (with optional search & category filter)
+- `GET /api/blog/{id}` - Get single blog post
+- `POST /api/blog` - Create new blog post
+- `PUT /api/blog/{id}` - Update blog post
+- `DELETE /api/blog/{id}` - Delete blog post
+
+### Calendar Events API
+- `GET /api/calendar` - Get all calendar events
+- `GET /api/calendar/{id}` - Get single event
+- `POST /api/calendar` - Create new event
+- `PUT /api/calendar/{id}` - Update event
+- `DELETE /api/calendar/{id}` - Delete event
+
+### Timeline Events API
+- `GET /api/timeline` - Get all timeline events
+- `GET /api/timeline/{id}` - Get single timeline event
+- `POST /api/timeline` - Create new timeline event
+- `PUT /api/timeline/{id}` - Update timeline event
+- `DELETE /api/timeline/{id}` - Delete timeline event
+
+### Contact Messages API
+- `POST /api/contact` - Submit contact form
+- `GET /api/contact` - Get all contact messages (admin only)
+
+## Frontend Integration Points
+
+### Pages to Update:
+1. **Home.jsx** - Fetch projects and blog posts from API
+2. **Projects.jsx** - Fetch and display projects from API
+3. **Blog.jsx** - Fetch and display blog posts from API
+4. **CalendarPage.jsx** - Full CRUD operations with API
+5. **About.jsx** - Fetch timeline events from API
+6. **Contact.jsx** - Submit form to API
+
+### API Service Layer
+Create `/frontend/src/services/api.js` with axios methods for all endpoints.
+
+## Implementation Steps
+
+1. ✅ Frontend with mock data (COMPLETED)
+2. ⏳ Backend models and schemas
+3. ⏳ Backend API endpoints
+4. ⏳ Frontend API service layer
+5. ⏳ Update frontend pages to use API
+6. ⏳ Remove mock data dependencies
+7. ⏳ Testing
+
+## Notes
+- All API responses will follow consistent format: `{ success: boolean, data: any, message?: string }`
+- Error handling will be implemented on both frontend and backend
+- Initial data from mock will be seeded into MongoDB for testing
+"
