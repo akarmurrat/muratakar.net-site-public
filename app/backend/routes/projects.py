@@ -7,6 +7,9 @@ router = APIRouter(prefix="/api/projects", tags=["projects"])
 
 @router.get("", response_model=List[Project])
 async def get_projects(category: Optional[str] = None):
+    if not db:
+        return []
+    
     query = {}
     if category and category != "All":
         query["category"] = category
@@ -16,6 +19,9 @@ async def get_projects(category: Optional[str] = None):
 
 @router.get("/{project_id}", response_model=Project)
 async def get_project(project_id: str):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     project = await db.projects.find_one({"id": project_id})
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -23,12 +29,18 @@ async def get_project(project_id: str):
 
 @router.post("", response_model=Project)
 async def create_project(project: ProjectCreate):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     project_obj = Project(**project.dict())
     await db.projects.insert_one(project_obj.dict())
     return project_obj
 
 @router.put("/{project_id}", response_model=Project)
 async def update_project(project_id: str, project: ProjectCreate):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     existing = await db.projects.find_one({"id": project_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -39,6 +51,9 @@ async def update_project(project_id: str, project: ProjectCreate):
 
 @router.delete("/{project_id}")
 async def delete_project(project_id: str):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     result = await db.projects.delete_one({"id": project_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Project not found")

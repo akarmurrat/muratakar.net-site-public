@@ -7,11 +7,17 @@ router = APIRouter(prefix="/api/calendar", tags=["calendar"])
 
 @router.get("", response_model=List[CalendarEvent])
 async def get_calendar_events():
+    if not db:
+        return []
+    
     events = await db.calendar_events.find().to_list(1000)
     return [CalendarEvent(**event) for event in events]
 
 @router.get("/{event_id}", response_model=CalendarEvent)
 async def get_calendar_event(event_id: str):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     event = await db.calendar_events.find_one({"id": event_id})
     if not event:
         raise HTTPException(status_code=404, detail="Calendar event not found")
@@ -19,12 +25,18 @@ async def get_calendar_event(event_id: str):
 
 @router.post("", response_model=CalendarEvent)
 async def create_calendar_event(event: CalendarEventCreate):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     event_obj = CalendarEvent(**event.dict())
     await db.calendar_events.insert_one(event_obj.dict())
     return event_obj
 
 @router.put("/{event_id}", response_model=CalendarEvent)
 async def update_calendar_event(event_id: str, event: CalendarEventCreate):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     existing = await db.calendar_events.find_one({"id": event_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Calendar event not found")
@@ -35,6 +47,9 @@ async def update_calendar_event(event_id: str, event: CalendarEventCreate):
 
 @router.delete("/{event_id}")
 async def delete_calendar_event(event_id: str):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     result = await db.calendar_events.delete_one({"id": event_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Calendar event not found")
