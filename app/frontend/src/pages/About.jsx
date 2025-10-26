@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Award, Target, Heart } from 'lucide-react';
-import { personalInfo, timelineEvents } from '../mock/mockData';
+import { personalInfo } from '../mock/mockData';
+import { timelineAPI } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 
 const About = () => {
+  const [timelineEvents, setTimelineEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTimeline = async () => {
+      try {
+        const data = await timelineAPI.getAll();
+        setTimelineEvents(data);
+      } catch (error) {
+        console.error('Error fetching timeline:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchTimeline();
+  }, []);
+  
   const getTypeColor = (type) => {
     switch (type) {
       case 'achievement':
@@ -175,3 +194,4 @@ const About = () => {
 };
 
 export default About;
+
