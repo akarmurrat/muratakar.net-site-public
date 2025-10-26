@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Calendar as CalendarIcon, Clock } from 'lucide-react';
-import { blogPosts } from '../mock/mockData';
+import { blogAPI } from '../services/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 
 const Blog = () => {
+  const [blogPosts, setBlogPosts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const categories = ['All', ...new Set(blogPosts.map(p => p.category))];
+  const [categories, setCategories] = useState(['All']);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        const data = await blogAPI.getAll();
+        setBlogPosts(data);
+        
+        // Extract unique categories
+        const uniqueCategories = ['All', ...new Set(data.map(p => p.category))];
+        setCategories(uniqueCategories);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchBlogPosts();
+  }, []);
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -18,6 +39,12 @@ const Blog = () => {
     return matchesSearch && matchesCategory;
   });
 
+  if (loading) {
+    return <div className=\"min-h-screen flex items-center justify-center\">
+      <p className=\"text-2xl text-slate-600\">Yükleniyor...</p>
+    </div>;
+  }
+  
   return (
     <div className="min-h-screen py-20 bg-slate-50">
       <div className="max-w-7xl mx-auto px-6">
@@ -113,3 +140,4 @@ const Blog = () => {
 };
 
 export default Blog;
+
