@@ -10,21 +10,28 @@ from typing import List
 import uuid
 from datetime import datetime
 
-
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+# Vercel için environment variables
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+db_name = os.environ.get('DB_NAME', 'muratakar_site')
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[db_name]
 
 # Create the main app without a prefix
 app = FastAPI()
 
-# Create a router with the /api prefix
-api_router = APIRouter(prefix=\"/api\")
+# CORS middleware ekle
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+# Create a router with the /api prefix
+api_router = APIRouter(prefix="/api")
 
 # Define Models
 class StatusCheck(BaseModel):
@@ -36,18 +43,18 @@ class StatusCheckCreate(BaseModel):
     client_name: str
 
 # Add your routes to the router instead of directly to app
-@api_router.get(\"/\")
-async def root():
-    return {\"message\": \"Hello World\"}
+@api_router.get("/")
+async def api_root():
+    return {"message": "Hello World"}
 
-@api_router.post(\"/status\", response_model=StatusCheck)
+@api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.dict()
     status_obj = StatusCheck(**status_dict)
     _ = await db.status_checks.insert_one(status_obj.dict())
     return status_obj
 
-@api_router.get(\"/status\", response_model=List[StatusCheck])
+@api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
@@ -63,3 +70,8 @@ app.include_router(contact.router)
 
 # Include the router in the main app
 app.include_router(api_router)
+
+# Vercel için root endpoint
+@app.get("/")
+async def root():
+    return {"message": "Murat Akar API", "status": "running"}

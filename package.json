@@ -1,0 +1,13 @@
+{
+  "name": "muratakar-site",
+  "version": "1.0.0",
+  "description": "Murat Akar's personal website",
+  "scripts": {
+    "build": "cd app/frontend && npm install && npm run build",
+    "dev": "cd app/frontend && npm start",
+    "start": "cd app/backend && python -m uvicorn server:app --host 0.0.0.0 --port 8000"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
