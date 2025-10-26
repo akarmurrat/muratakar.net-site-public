@@ -154,9 +154,9 @@ const Contact = () => {
                       placeholder="Mesajınızı buraya yazın..."
                     />
                   </div>
-                  <Button type="submit" className="w-full rounded-full bg-blue-600 hover:bg-blue-700 py-6 text-lg">
+                  <Button type="submit" className="w-full rounded-full bg-blue-600 hover:bg-blue-700 py-6 text-lg"disabled={submitting}>
                     <Send className="mr-2" />
-                    Mesaj Gönder
+                    {submitting ? 'Gönderiliyor...' : 'Mesaj Gönder'}
                   </Button>
                 </form>
               </CardContent>
@@ -169,4 +169,5 @@ const Contact = () => {
 };
 
 export default Contact;
+
 
