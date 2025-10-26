@@ -7,11 +7,17 @@ router = APIRouter(prefix="/api/timeline", tags=["timeline"])
 
 @router.get("", response_model=List[TimelineEvent])
 async def get_timeline_events():
+    if not db:
+        return []
+    
     events = await db.timeline_events.find().to_list(1000)
     return [TimelineEvent(**event) for event in events]
 
 @router.get("/{event_id}", response_model=TimelineEvent)
 async def get_timeline_event(event_id: str):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     event = await db.timeline_events.find_one({"id": event_id})
     if not event:
         raise HTTPException(status_code=404, detail="Timeline event not found")
@@ -19,12 +25,18 @@ async def get_timeline_event(event_id: str):
 
 @router.post("", response_model=TimelineEvent)
 async def create_timeline_event(event: TimelineEventCreate):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     event_obj = TimelineEvent(**event.dict())
     await db.timeline_events.insert_one(event_obj.dict())
     return event_obj
 
 @router.put("/{event_id}", response_model=TimelineEvent)
 async def update_timeline_event(event_id: str, event: TimelineEventCreate):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     existing = await db.timeline_events.find_one({"id": event_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Timeline event not found")
@@ -35,6 +47,9 @@ async def update_timeline_event(event_id: str, event: TimelineEventCreate):
 
 @router.delete("/{event_id}")
 async def delete_timeline_event(event_id: str):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     result = await db.timeline_events.delete_one({"id": event_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Timeline event not found")

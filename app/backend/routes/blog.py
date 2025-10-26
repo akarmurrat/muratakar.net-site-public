@@ -7,6 +7,9 @@ router = APIRouter(prefix="/api/blog", tags=["blog"])
 
 @router.get("", response_model=List[BlogPost])
 async def get_blog_posts(category: Optional[str] = None, search: Optional[str] = None):
+    if not db:
+        return []
+    
     query = {}
     
     if category and category != "All":
@@ -23,6 +26,9 @@ async def get_blog_posts(category: Optional[str] = None, search: Optional[str] =
 
 @router.get("/{post_id}", response_model=BlogPost)
 async def get_blog_post(post_id: str):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     post = await db.blog_posts.find_one({"id": post_id})
     if not post:
         raise HTTPException(status_code=404, detail="Blog post not found")
@@ -30,12 +36,18 @@ async def get_blog_post(post_id: str):
 
 @router.post("", response_model=BlogPost)
 async def create_blog_post(post: BlogPostCreate):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     post_obj = BlogPost(**post.dict())
     await db.blog_posts.insert_one(post_obj.dict())
     return post_obj
 
 @router.put("/{post_id}", response_model=BlogPost)
 async def update_blog_post(post_id: str, post: BlogPostCreate):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     existing = await db.blog_posts.find_one({"id": post_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Blog post not found")
@@ -46,6 +58,9 @@ async def update_blog_post(post_id: str, post: BlogPostCreate):
 
 @router.delete("/{post_id}")
 async def delete_blog_post(post_id: str):
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not available")
+    
     result = await db.blog_posts.delete_one({"id": post_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Blog post not found")
