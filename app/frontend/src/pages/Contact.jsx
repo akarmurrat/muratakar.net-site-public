@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { personalInfo } from '../mock/mockData';
+import { contactAPI } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -16,15 +17,30 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock submission
+    setSubmitting(true);
+    
+    try {
+      await contactAPI.submit(formData);
     toast({
       title: "Mesaj Gönderildi!",
       description: "En kısa sürede size geri dönüş yapacağım.",
     });
     setFormData({ name: '', email: '', subject: '', message: '' });
+      } catch (error) {
+      console.error('Error submitting contact form:', error);
+      toast({
+        title: \"Hata\",
+        description: \"Mesaj gönderilemedi. Lütfen tekrar deneyin.\",
+        variant: \"destructive\"
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -153,3 +169,4 @@ const Contact = () => {
 };
 
 export default Contact;
+
