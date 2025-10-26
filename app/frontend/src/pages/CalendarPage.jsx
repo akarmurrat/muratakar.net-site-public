@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Calendar as CalendarIcon, Clock, Edit, Trash2 } from 'lucide-react';
-import { calendarEvents } from '../mock/mockData';
+import { calendarAPI } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
@@ -8,11 +8,14 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { useToast } from '../hooks/use-toast';
 
 const CalendarPage = () => {
-  const [events, setEvents] = useState(calendarEvents);
+  const { toast } = useToast();
+  const [events, setEvents] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -20,34 +23,86 @@ const CalendarPage = () => {
     time: '',
     type: 'task'
   });
+  
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
-  const handleSubmit = (e) => {
+  const fetchEvents = async () => {
+    try {
+      const data = await calendarAPI.getAll();
+      setEvents(data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      toast({
+        title: \"Hata\",
+        description: \"Etkinlikler yüklenemedi.\",
+        variant: \"destructive\"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
     if (editingEvent) {
       // Edit existing event
-      setEvents(events.map(event =>
-        event.id === editingEvent.id ? { ...formData, id: event.id } : event
-      ));
+       await calendarAPI.update(editingEvent.id, formData);
+          toast({
+            title: \"Başarılı\",
+            description: \"Etkinlik güncellendi.\"
+          });
     } else {
       // Add new event
-      const newEvent = {
-        ...formData,
-        id: events.length + 1
-      };
-      setEvents([...events, newEvent]);
-    }
+      await calendarAPI.create(formData);
+        toast({
+          title: \"Başarılı\",
+          description: \"Yeni etkinlik eklendi.\"
+        });
+      }
+      await fetchEvents();
     setIsDialogOpen(false);
     resetForm();
+    } catch (error) {
+      console.error('Error saving event:', error);
+      toast({
+        title: \"Hata\",
+        description: \"Etkinlik kaydedilemedi.\",
+        variant: \"destructive\"
+      });
+    }
   };
 
   const handleEdit = (event) => {
     setEditingEvent(event);
-    setFormData(event);
+    setFormData({
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      time: event.time,
+      type: event.type
+    });
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id) => {
-    setEvents(events.filter(event => event.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      await calendarAPI.delete(id);
+      await fetchEvents();
+      toast({
+        title: \"Başarılı\",
+        description: \"Etkinlik silindi.\"
+      });
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      toast({
+        title: \"Hata\",
+        description: \"Etkinlik silinemedi.\",
+        variant: \"destructive\"
+      });
+    }
   };
 
   const resetForm = () => {
@@ -245,3 +300,4 @@ const CalendarPage = () => {
 };
 
 export default CalendarPage;
+
